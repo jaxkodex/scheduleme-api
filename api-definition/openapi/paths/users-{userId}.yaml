@@ -1,0 +1,33 @@
+get:
+  tags:
+    - User
+  summary: Get user by id
+  description: |
+    Get user information by userId.
+  operationId: getUserById
+  parameters:
+    - name: userId
+      in: path
+      description: "The id for which you want to retrieve the data."
+      example: b25f519f-d888-4862-81c2-540939838918
+      required: true
+      schema:
+        type: string
+  security:
+    - main_auth: []
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/User.yaml'
+          example:
+            username: 'user1'
+            email: 'user@example.com'
+    '403':
+      description: Forbidden
+      $ref: ../components/responses/Problem.yaml
+    '404':
+      description: User not found
+      $ref: ../components/responses/Problem.yaml

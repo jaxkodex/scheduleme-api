@@ -1,0 +1,9 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "scheduleme-api"
+resolve_s3 = true
+s3_prefix = "scheduleme-api"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "FirebaseProjectId=\"schedume-me-schools\" Stage=\"prod\""
+image_repositories = []

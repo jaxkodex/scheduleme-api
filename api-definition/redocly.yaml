@@ -1,0 +1,22 @@
+# See https://redocly.com/docs/cli/configuration/ for more information.
+apis:
+  scheduleme@v1: 
+    root: openapi/openapi.yaml
+    x-openapi-ts:
+      output: ./dist/api.ts
+      client: fetch
+extends:
+  - recommended
+rules:
+  no-unused-components: error
+  no-server-example.com: off
+theme:
+  openapi:
+    htmlTemplate: ./docs/index.html
+    theme:
+      colors:
+        primary:
+          main: "#32329f"
+    generateCodeSamples:
+      languages:  # Array of language config objects; indicates in which languages to generate code samples.
+        - lang: curl

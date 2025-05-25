@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: ScheduleMe API with Firebase Authentication
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: provided.al2023
+    Architectures:
+      - x86_64
+    ReservedConcurrentExecutions: 1
+
+Parameters:
+  FirebaseProjectId:
+    Type: String
+    Description: Firebase Project ID
+  Stage:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - prod
+    Description: Deployment stage
+
+Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Stage
+      Auth:
+        DefaultAuthorizer: FirebaseJWTAuthorizer
+        Authorizers:
+          FirebaseJWTAuthorizer:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              issuer: !Sub "https://securetoken.google.com/${FirebaseProjectId}"
+              audience:
+                - !Ref FirebaseProjectId
+              type: jwt
+
+  GetUserFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+      BuildProperties:
+        Makefile: Makefile
+        MakeTarget: build
+    Properties:
+      CodeUri: ./get-user
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: SCHEDULEME_USERS
+      Events:
+        GetUser:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ApiGatewayApi
+            Path: /users/{userId}
+            Method: GET
+            Auth:
+              Authorizer: FirebaseJWTAuthorizer
+
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: SCHEDULEME_USERS
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userid
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userid
+          KeyType: HASH
+      Tags:
+        - Key: Environment
+          Value: !Ref Stage
+
+Outputs:
+  ApiEndpoint:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
+  UsersTableName:
+    Description: DynamoDB Users Table Name
+    Value: !Ref UsersTable 

@@ -1,0 +1,23 @@
+openapi: 3.0.0
+info:
+  title: ScheduleMe API
+  version: 1.0.0
+  description: API for the ScheduleMe app
+
+tags:
+  - name: User
+    description: User management
+
+servers:
+  - url: https://hy9mr7pu6d.execute-api.us-east-1.amazonaws.com/prod
+
+paths:
+  /users/{userId}:
+    $ref: 'paths/users-{userId}.yaml'
+
+components:
+  securitySchemes:
+    main_auth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

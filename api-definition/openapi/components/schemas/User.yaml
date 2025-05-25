@@ -1,0 +1,44 @@
+type: object
+required:
+  - username
+  - status
+properties:
+  username:
+    description: "The username associated with the user profile."
+    type: string
+    minLength: 4
+    maxLength: 32
+    pattern: '/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/'
+    example: John78
+  firstName:
+    description: "User's first name."
+    type: string
+    minLength: 1
+    example: Bunny
+  lastName:
+    description: "User's last name."
+    type: string
+    minLength: 1
+    example: Rabbit
+  email:
+    $ref: './Email.yaml'
+  phone:
+    description: "User's phone number. Must be provided in international format."
+    type: string
+    pattern: '/^\+(?:[0-9]-?){6,14}[0-9]$/'
+    maxLength: 32
+    example: +4-0800-555-0110
+  status:
+    description: "Status of the user account."
+    type: array
+    minItems: 1
+    items:
+      type: string
+      enum:
+        - active
+        - banned
+        - inactive
+  userid:
+    description: "Unique ID of the user."
+    allOf:
+      - $ref: './examples/UserId.yaml'
