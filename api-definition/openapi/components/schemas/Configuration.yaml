@@ -1,0 +1,33 @@
+type: object
+required:
+  - user
+properties:
+  user:
+    $ref: './User.yaml'
+  availableSchools:
+    description: "List of schools available to the user."
+    type: array
+    items:
+      type: object
+      required:
+        - id
+        - name
+        - role
+      properties:
+        id:
+          description: "Unique identifier for the school."
+          type: string
+          example: 'school1'
+        name:
+          description: "Name of the school."
+          type: string
+          example: 'Springfield High School'
+        role:
+          description: "Role of the user in the school."
+          type: string
+          enum:
+            - student
+            - teacher
+            - parent
+            - administrator
+          example: student

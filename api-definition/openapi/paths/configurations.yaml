@@ -1,0 +1,26 @@
+get:
+  tags:
+    - Configuration
+  summary: Get all configurations
+  description: |
+    Retrieve all configurations for the authenticated user.
+  operationId: getAllConfigurations
+  security:
+    - main_auth: []
+  responses:
+    '200':
+      description: Success
+      content:
+        application/json:
+          schema:
+            $ref: '../components/schemas/Configuration.yaml'
+          example:
+            id: 'config1'
+            name: 'Configuration 1'
+            value: 'Value 1'
+    '403':
+      description: Forbidden
+      $ref: '../components/responses/Problem.yaml'
+    '404':
+      description: No configurations found
+      $ref: '../components/responses/Problem.yaml'
