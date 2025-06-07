@@ -62,6 +62,32 @@ Resources:
             Auth:
               Authorizer: FirebaseJWTAuthorizer
 
+  GetAllConfigurationsFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: makefile
+      BuildProperties:
+        Makefile: Makefile
+        MakeTarget: build
+    Properties:
+      CodeUri: ./get-all-configurations
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: USER_CONFIGURATIONS
+        - DynamoDBReadPolicy:
+            TableName: SCHEDULEME_USERS
+      Events:
+        GetAllConfigurations:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref ApiGatewayApi
+            Path: /configurations
+            Method: GET
+            Auth:
+              Authorizer: FirebaseJWTAuthorizer
+
   UsersTable:
     Type: AWS::DynamoDB::Table
     Properties:
@@ -77,10 +103,32 @@ Resources:
         - Key: Environment
           Value: !Ref Stage
 
+  UserConfigurationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: USER_CONFIGURATIONS
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userid
+          AttributeType: S
+        - AttributeName: id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userid
+          KeyType: HASH
+        - AttributeName: id
+          KeyType: RANGE
+      Tags:
+        - Key: Environment
+          Value: !Ref Stage
+
 Outputs:
   ApiEndpoint:
     Description: API Gateway endpoint URL
     Value: !Sub "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}/"
   UsersTableName:
     Description: DynamoDB Users Table Name
-    Value: !Ref UsersTable 
+    Value: !Ref UsersTable
+  UserConfigurationsTableName:
+    Description: DynamoDB User Configurations Table Name
+    Value: !Ref UserConfigurationsTable

@@ -1,0 +1,41 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Resources": {
+    "GetAllConfigurationsFunction": {
+      "Type": "AWS::Serverless::Function",
+      "Properties": {
+        "Handler": "bootstrap",
+        "Runtime": "provided.al2",
+        "CodeUri": ".",
+        "Timeout": 10,
+        "MemorySize": 128,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole",
+          {
+            "Version": "2012-10-17",
+            "Statement": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:GetItem",
+                  "dynamodb:Query"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        ],
+        "Events": {
+          "Api": {
+            "Type": "Api",
+            "Properties": {
+              "Path": "/configurations",
+              "Method": "get"
+            }
+          }
+        }
+      }
+    }
+  }
+}
